@@ -1,0 +1,9 @@
+// fit.hom
+
+dis Mono {
+    Var(g: Mono::Var)
+}
+fun g(m: Mono::Var) -> Mono::Var {
+    m = m;
+    ret m.g.g.g.g.g.g;
+}

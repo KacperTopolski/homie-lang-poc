@@ -18,7 +18,7 @@ class TokenCursor:
         if not self.has():
             return self.eof()
         return self.tokens[self.index]
-    
+
     def take(self):
         result = self.tokens[self.index]
         self.index += 1
@@ -43,13 +43,13 @@ class ResultStatus(Enum):
     '''
     Ok = auto()
     Err = auto()
-    Backtracked = auto() 
+    Backtracked = auto()
 
 @dataclass
 class Result[T]:
     status: ResultStatus
     parsed: T | None
-    errors: List[Error]
+    errors: list[Error]
 
     def Ok(parsed, errors=None):
         return Result(ResultStatus.Ok, parsed, errors or [])
@@ -65,7 +65,7 @@ class Result[T]:
             return self
         else:
             return ResultStatus.Ok(mapper(self.parsed))
- 
+
 
 class Parser[T](ABC):
     @abstractmethod
@@ -74,10 +74,10 @@ class Parser[T](ABC):
 
     def __or__(self, rhs):
         return Alternative(self, rhs)
-    
+
     def map(self, mapper):
         return Mapped(self, mapper)
-    
+
     def replace(self, value):
         return Mapped(self, lambda _: value)
 
@@ -162,7 +162,7 @@ class Repeat[T](Parser):
         self.parser = parser
         self.minimum = minimum
 
-    def run(self, cursor, backtracking=False) -> Result[List[T]]:
+    def run(self, cursor, backtracking=False) -> Result[list[T]]:
         cursor_state = cursor.save()
         result = []
         while True:
@@ -177,11 +177,11 @@ class Repeat[T](Parser):
                 break
             else:
                 return parsed
-        
+
         if len(result) < self.minimum:
             cursor.restore(cursor_state)
             return Result.Backtracked()
-        
+
         return Result.Ok(result)
 
 
@@ -200,7 +200,7 @@ class Alternative[T, U](Parser[T | U]):
             return self.right.run(cursor, backtracking)
 
 class SequenceParser[T](Parser[T]):
-    class ListBuilder:
+    class listBuilder:
         def __init__(self):
             self.list = []
 
@@ -211,21 +211,21 @@ class SequenceParser[T](Parser[T]):
             return self.list
 
     def __init__(self):
-        self.builder = BuilderParser(SequenceParser.ListBuilder)
+        self.builder = BuilderParser(SequenceParser.listBuilder)
 
     def then_drop(self, parser):
         self.builder.then_drop(parser)
         return self
 
     def then_parse(self, parser):
-        self.builder.then_parse(SequenceParser.ListBuilder.append, parser)
+        self.builder.then_parse(SequenceParser.listBuilder.append, parser)
         return self
 
     def commit(self):
         self.builder.commit()
         return self
 
-    def run(self, cursor, backtracking=False) -> Result[List[T]]:
+    def run(self, cursor, backtracking=False) -> Result[list[T]]:
         return self.builder.run(cursor, backtracking)
 
     def flatten(self, parser, parsed):
@@ -244,7 +244,7 @@ class OptionalParser[T](Parser):
         self.parser = parser
         self.default = default
 
-    def run(self, cursor, backtracking=False) -> Result[List[T]]:
+    def run(self, cursor, backtracking=False) -> Result[list[T]]:
         result = self.parser.run(cursor, True)
         if result.status == ResultStatus.Backtracked:
             result.status = ResultStatus.Ok
@@ -289,7 +289,7 @@ class Interspersed(Parser):
                     break
             elif separator.status == ResultStatus.Err:
                 return separator
-        
+
         return Result.Ok(result)
 
 
@@ -301,7 +301,7 @@ class ExpectKind(Parser):
         if cursor.has() and cursor.peek().kind == self.kind:
             return Result.Ok(cursor.take())
         elif backtracking:
-            return Result.Backtracked() 
+            return Result.Backtracked()
         else:
             found_token = cursor.peek()
             kind_name = KIND_TO_STR[self.kind]
@@ -326,7 +326,7 @@ class Unreachable(Parser):
         found_token = cursor.peek()
         msg = Message(found_token.location, f"Parser has reached an unreachable state")
         return Result.Err([Error(msg)])
-    
+
 class Nothing(Parser):
     def run(self, cursor, backtracking):
         return Result.Ok(None)
@@ -359,11 +359,10 @@ class Not(Parser):
                 return Result.Err([Error(msg)])
         else:
             return Result.Ok(None)
-        
+
 class Supply(Parser):
     def __init__(self, supplier):
         self.supplier = supplier
 
     def run(self, cursor, backtracking):
         return Result.Ok(self.supplier())
-

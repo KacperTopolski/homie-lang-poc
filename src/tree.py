@@ -18,7 +18,7 @@ def buildable(cls):
             obj = cls(*self.values.values())
             obj.location = location
             return obj
-    
+
     def add_builder_method(name):
         def set_field(self, value):
             self.values[name] = value
@@ -56,20 +56,20 @@ class Write:
 @buildable
 @dataclass
 class GenericParamsNode(Node):
-    params: List[Token]
+    params: list[Token]
 
 @buildable
 @dataclass
 class DisTypeNode(Node):
     name: Token
-    generics: List[Type]
+    generics: list[Type]
 
 
 @buildable
 @dataclass
 class DisConstructorNode(Node):
     name: str
-    generics: List[Type]
+    generics: list[Type]
     variant_name: str
 
 @buildable
@@ -86,13 +86,13 @@ class MemberNode(Node):
 @buildable
 @dataclass
 class FunctionTypeNode:
-    args: List[Type]
+    args: list[Type]
     ret: Type
 
 @buildable
 @dataclass
 class ArgNode:
-    location: Location 
+    location: Location
     name: str
     type: Type
 
@@ -113,7 +113,7 @@ class OperatorNode(Node):
 class DisVariantNode:
     location: Location
     name: Token
-    args: List[ArgNode]
+    args: list[ArgNode]
 
 
 @buildable
@@ -121,7 +121,7 @@ class DisVariantNode:
 class DisNode(Node):
     name: Token
     generics: GenericParamsNode
-    variants: List[DisVariantNode]
+    variants: list[DisVariantNode]
 
     def get_variant_node(self, name: str):
         for v in self.variants:
@@ -132,7 +132,7 @@ class DisNode(Node):
 @dataclass
 class PatternNode(Node):
     name: Token
-    args: List[Pattern | Value | None]
+    args: list[Pattern | Value | None]
 
 @buildable
 @dataclass
@@ -140,16 +140,16 @@ class FitBranchNode(Node):
     location: Location
     left: Pattern | Value | None
     right: ExprNode
-    
+
 @buildable
 @dataclass
 class FitNode(Node):
-    location: Location 
+    location: Location
     expr: ExprNode
-    branches: List[FitBranchNode]
+    branches: list[FitBranchNode]
 
 type ExprNode = FitNode
-type StatementNode = ExprNode | RetNode | BlockNode 
+type StatementNode = ExprNode | RetNode | BlockNode
 
 @buildable
 @dataclass
@@ -159,7 +159,7 @@ class RetNode(Node):
 @buildable
 @dataclass
 class BlockNode(Node):
-    statements: List[StatementNode]
+    statements: list[StatementNode]
 
 
 @buildable
@@ -178,7 +178,7 @@ class ValueNode(Node):
 class FunNode(Node):
     name: str
     generics: GenericParamsNode
-    args: List[ArgNode]
+    args: list[ArgNode]
     ret: Type
     body: BlockNode
 
@@ -187,11 +187,11 @@ class FunNode(Node):
 @dataclass
 class FunInstNode(Node):
     name: Token
-    generics: List[Type]
+    generics: list[Type]
 
 
 @buildable
 @dataclass
 class CallNode(Node):
     fun: ExprNode | DisConstructorNode
-    arguments: List[ExprNode]
+    arguments: list[ExprNode]

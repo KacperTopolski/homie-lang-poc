@@ -14,7 +14,7 @@ class IntValue:
     Loads value to rax
     """
     value: int
-    
+
     def to_asm(self, ctx: AsmContext):
         return f"mov rax, {self.value}"
 
@@ -51,7 +51,7 @@ class FitBranch:
 class Fit:
     """leaves result in rax"""
     obj: Expr
-    branches: List[FitBranch]
+    branches: list[FitBranch]
 
     def to_asm(self, ctx: AsmContext):
         fit_end = ctx.unique_id("fit_end")
@@ -74,7 +74,7 @@ class Fit:
 class Pattern:
     """takes object in rax, destroys it. iff pattern matches object ZF is set"""
     type_id: int
-    children: List[Pattern | None]
+    children: list[Pattern | None]
 
     def to_asm(self, ctx: AsmContext) -> str:
         match_start = ctx.unique_id("match")
@@ -127,7 +127,7 @@ def br(depth):
 class Fun:
     name: str
     local_vars: int
-    content: List[Statement]
+    content: list[Statement]
 
     def to_asm(self, ctx: AsmContext) -> str:
         ctx.return_token = ctx.unique_id(f"{self.name}_ret")
@@ -150,7 +150,7 @@ class Return:
     content: Expr
 
     def to_asm(self, ctx: AsmContext) -> str:
-        return f""" 
+        return f"""
             {self.content.to_asm(ctx)}
             mov rsp, rbp
             ret
@@ -163,10 +163,10 @@ class Return:
 class Call:
     """calls function and leaves result in rax"""
     function: Expr
-    args: List[Expr]
+    args: list[Expr]
 
     def to_asm(self, ctx: AsmContext) -> str:
-        return f""" 
+        return f"""
             push rbp
             {'\n'.join(f'''
                 {arg.to_asm(ctx)}
@@ -188,7 +188,7 @@ class Let:
     value: Expr
 
     def to_asm(self, ctx: AsmContext) -> str:
-        return f""" 
+        return f"""
             {self.value.to_asm(ctx)}
             mov [rbp - {8 + 8 * self.var}], rax
         """
@@ -200,7 +200,7 @@ class Let:
 class FunName:
     name: str
     def to_asm(self, ctx: AsmContext) -> str:
-        return f""" 
+        return f"""
             mov rax, {self.name}
         """
     def pretty_print(self, depth = 0) -> str:
@@ -208,7 +208,7 @@ class FunName:
 
 @dataclass
 class Program:
-    functions: List[Fun]
+    functions: list[Fun]
     def to_asm(self, ctx: AsmContext) -> str:
         result = f"""
             section .text
@@ -224,7 +224,7 @@ class Program:
 
     def pretty_print(self) -> str:
         return '\n\n'.join(f.pretty_print(0) for f in self.functions)
-    
+
 @dataclass
 class Arg:
     i: int
@@ -266,7 +266,7 @@ class Member:
 @dataclass
 class Print:
     value: str
-    
+
     def to_asm(self, ctx: AsmContext):
         str_label = ctx.unique_id("str")
         after_str_label = ctx.unique_id("after_str")
@@ -299,7 +299,7 @@ class IntValue:
 class Create:
     """creates object and puts it in rax"""
     type_id: int
-    children: List[Expr]
+    children: list[Expr]
 
     def to_asm(self, ctx: AsmContext):
         if len(self.children) == 0:

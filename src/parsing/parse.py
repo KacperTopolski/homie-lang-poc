@@ -5,7 +5,7 @@ from parsing.combinators import *
 from parsing.helpers import *
 from parsing.expressions import *
 
-def parse(tokens: List[Token]) -> Result:
+def parse(tokens: list[Token]) -> Result:
     return program_parser().run(TokenCursor(tokens))
 
 def program_parser():
@@ -59,7 +59,7 @@ def args_parser():
     return parenthesized(interspersed(arg_parser(), kind(SymbolKind.Comma)))
 
 
-def type_parser():        
+def type_parser():
     def make_function_type(args):
         if len(args) == 1:
             return args[0]

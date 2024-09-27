@@ -19,7 +19,7 @@ class RawToken:
     kind: RawTokenKind
     location: Location
 
-    
+
 
 class TextCursor:
     def __init__(self, source):
@@ -28,7 +28,7 @@ class TextCursor:
         self.eaten_index = 0
 
     def peek(self, n=1) -> str | None:
-        if self.index + n <= len(self.source.text): 
+        if self.index + n <= len(self.source.text):
             return self.source.text[self.index:self.index+n]
 
     def advance(self, n=1):
@@ -39,12 +39,12 @@ class TextCursor:
         location = Location(self.source, self.eaten_index, self.index)
         self.eaten_index = self.index
         return result, location
-        
+
     def has(self, n=1):
         return self.index + n <= len(self.source.text)
-        
 
-def lex(source: Source) -> List[Token]:
+
+def lex(source: Source) -> list[Token]:
     cursor = TextCursor(source)
     tokens = []
     while cursor.has():
@@ -55,7 +55,7 @@ def lex(source: Source) -> List[Token]:
     return tokens
 
 
-def cook_token(token: RawToken) -> List[TokenKind]:
+def cook_token(token: RawToken) -> list[TokenKind]:
     if token.text in SYMBOL_MAP:
         return [Token(token.text, SYMBOL_MAP[token.text], token.location)]
     elif token.kind == RawTokenKind.Whitespace or token.kind == RawTokenKind.Comment:
@@ -107,7 +107,7 @@ def lex_raw_token(cursor: TextCursor):
         return RawToken(text, RawTokenKind.StringLiteral, location)
     else:
         print("unexpected: ", cursor.peek())
-        
+
 
 def is_space(cursor: TextCursor):
     return cursor.peek() in string.whitespace
@@ -165,7 +165,7 @@ def lex_inline_comment(cursor: TextCursor):
     if cursor.has():
         cursor.advance()
     return cursor.eaten()
-        
+
 
 def lex_multiline_comment(cursor: TextCursor):
     open_comments = 0
@@ -178,7 +178,7 @@ def lex_multiline_comment(cursor: TextCursor):
             open_comments -= 1
         else:
             cursor.advance(1)
-        
+
         if open_comments == 0:
             break
     return cursor.eaten()

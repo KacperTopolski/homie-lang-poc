@@ -1,13 +1,12 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import List
 from tree import TypeNode
 
 type Ty = WildcardTy | TyVar | FunTy | DisTy | ErrorTy | None | SimpleType
 
 @dataclass
 class WildcardTy:
-    
+
     def __str__(self):
         return "?"
 
@@ -37,7 +36,7 @@ class FunctionDeclaration:
 @dataclass
 class DisDeclaration:
     generic_arg_count: int
-    variants: List[VariantDeclaration]
+    variants: list[VariantDeclaration]
 
     def has_variant(self, name):
         return any(variant.name == name for variant in self.variants)
@@ -51,14 +50,14 @@ class DisDeclaration:
 @dataclass
 class VariantDeclaration:
     name: str
-    args: List[Arg]
+    args: list[Arg]
 
     def get_arg_count(self):
         return len(self.args)
 
     def get_arg_types(self):
         return [arg.ty for arg in self.args]
-    
+
     def has_arg(self, name: str):
         return any(arg.name == name for arg in self.args)
 
@@ -75,7 +74,7 @@ class Arg:
 
 @dataclass
 class FunTy:
-    arg_types: List[Ty]
+    arg_types: list[Ty]
     result_type: Ty
 
     def __str__(self) -> str:
@@ -90,12 +89,12 @@ class FunTy:
 @dataclass
 class TyPattern:
     name: str
-    children: List[TyPattern | None] | None
+    children: list[TyPattern | None] | None
 
 @dataclass
 class DisTy:
     name: str
-    generic_types: List[Ty]
+    generic_types: list[Ty]
     pattern: TyPattern | None
 
     def __str__(self):
@@ -106,7 +105,7 @@ class DisTy:
         return f"{self.name}{generics}{pattern}"
 
 
-def substitute(ty: Ty, subst: List[Ty]):
+def substitute(ty: Ty, subst: list[Ty]):
     if isinstance(ty, FunTy):
         arg_types = [substitute(arg, subst) for arg in ty.arg_types]
         result_type = substitute(ty.result_type, subst)

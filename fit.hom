@@ -5,5 +5,5 @@ dis Mono {
 }
 fun g(m: Mono::Var) -> Mono::Var {
     m = m;
-    ret m.g.g.g.g.g.g;
+    ret m.g;
 }

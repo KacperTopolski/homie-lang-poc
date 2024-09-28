@@ -83,6 +83,14 @@ class MemberNode(Node):
     expr: ExprNode
     member_name: Token
 
+type AssignableNode = VarNode | MemberNode
+
+@buildable
+@dataclass
+class AssignNode(Node):
+    var: AssignableNode
+    expr: ExprNode
+
 @buildable
 @dataclass
 class FunctionTypeNode:
@@ -148,7 +156,7 @@ class FitNode(Node):
     expr: ExprNode
     branches: list[FitBranchNode]
 
-type ExprNode = FitNode
+type ExprNode = FitNode | VarNode | ValueNode | CallNode
 type StatementNode = ExprNode | RetNode | BlockNode
 
 @buildable

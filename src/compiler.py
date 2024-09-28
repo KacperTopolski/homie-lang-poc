@@ -230,8 +230,9 @@ class ArgAddress:
     i: int
     def to_asm(self, ctx: AsmContext) -> str:
         return f"""
-            mov rax, rbp + {8 + 8 * self.i}
-        """
+            mov rax, rbp
+            add rax, {8 + 8 * self.i}
+        """ # ^ to się chyba jakąś leą da zopcić @pichal
     def pretty_print(self, depth = 0) -> str:
         return f"&[{self.i}]"
 
@@ -240,7 +241,8 @@ class VarAddress:
     var: int
     def to_asm(self, ctx: AsmContext) -> str:
         return f"""
-            mov rax, rbp - {8 + 8 * self.var}
+            mov rax, rbp
+            sub rax, {8 + 8 * self.var}
         """
     def pretty_print(self, depth = 0) -> str:
         return f"&({self.var})"

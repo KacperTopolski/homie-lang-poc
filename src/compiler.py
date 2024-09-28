@@ -230,8 +230,7 @@ class ArgAddress:
     i: int
     def to_asm(self, ctx: AsmContext) -> str:
         return f"""
-            mov rax, rbp
-            add rax, {8 + 8 * self.i}
+            lea rax, [rbp + {8 + 8 * self.i}]
         """ # ^ to się chyba jakąś leą da zopcić @pichal
     def pretty_print(self, depth = 0) -> str:
         return f"&[{self.i}]"
@@ -241,8 +240,7 @@ class VarAddress:
     var: int
     def to_asm(self, ctx: AsmContext) -> str:
         return f"""
-            mov rax, rbp
-            sub rax, {8 + 8 * self.var}
+            lea rax, [rbp - {8 + 8 * self.var}]
         """
     def pretty_print(self, depth = 0) -> str:
         return f"&({self.var})"
@@ -256,7 +254,7 @@ class VarArg:
             mov rax, [rax]
         """
     def pretty_print(self, depth = 0) -> str:
-        return self.var.to_asm(depth)[1:]
+        return self.var.pretty_print(depth)[1:]
 
 @dataclass
 class MemberAddress:
@@ -282,7 +280,7 @@ class Member: # @pichal w zasadzie to to samo co VarArg. Może jakiś Deref?
             mov rax, [rax]
         """
     def pretty_print(self, depth = 0) -> str:
-        return self.member.to_asm(depth)[1:]
+        return self.member.pretty_print(depth)[1:]
 
 @dataclass
 class Assign:
@@ -298,7 +296,7 @@ class Assign:
             mov [rcx], rax
         """
     def pretty_print(self, depth = 0) -> str:
-        return self.var.to_asm(depth) + " = " + self.obj.to_asm(depth)
+        return self.var.pretty_print(depth) + " = " + self.obj.pretty_print(depth)
 
 @dataclass
 class Print:

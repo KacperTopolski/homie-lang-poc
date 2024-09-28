@@ -47,7 +47,7 @@ def run_file(file):
         else:
             program = to_ll(program, ctx)
 
-            print(program.pretty_print(), file=sys.stderr)
+            # print(program.pretty_print(), file=sys.stderr)
             print(compile(program))
     else:
         print('parse fail')
